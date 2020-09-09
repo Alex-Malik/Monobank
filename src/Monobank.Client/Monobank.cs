@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Globalization;
-using System.IO;
 using System.Net.Http;
 using Newtonsoft.Json;
 using System.Threading.Tasks;
@@ -19,6 +16,7 @@ namespace Monobank.Client
         private const string UserInfoUrlPart = "/personal/client-info";
         private const string WebhookUrlPart = "/personal/webhook";
         private const string StatementUrlPart = "/personal/statement/{account}/{from}/{to}";
+        private const string XToken = "X-Token";
         private readonly string _token;
 
         /// <summary>
@@ -70,7 +68,7 @@ namespace Monobank.Client
             {
                 var httpClient = new HttpClient();
                 var httpRequest = new HttpRequestMessage(HttpMethod.Get, MonobankBaseUrl + UserInfoUrlPart);
-                httpRequest.Headers.Add("X-Token", _token);
+                httpRequest.Headers.Add(XToken, _token);
                 var httpResponse = await httpClient.SendAsync(httpRequest);
 
                 var json = await httpResponse.Content.ReadAsStringAsync();
@@ -104,7 +102,7 @@ namespace Monobank.Client
             {
                 var httpClient = new HttpClient();
                 var httpRequest = new HttpRequestMessage(HttpMethod.Post, MonobankBaseUrl + WebhookUrlPart);
-                httpRequest.Headers.Add("X-Token", _token);
+                httpRequest.Headers.Add(XToken, _token);
                 httpRequest.Content = new StringContent(JsonConvert.SerializeObject(webhook));
                 await httpClient.SendAsync(httpRequest);
             }
@@ -139,7 +137,7 @@ namespace Monobank.Client
                         .Replace("{account}", account)
                         .Replace("{from}", new DateTimeOffset(from).ToUnixTimeSeconds().ToString())
                         .Replace("{to}", new DateTimeOffset(to).ToUnixTimeSeconds().ToString()));
-                httpRequest.Headers.Add("X-Token", _token);
+                httpRequest.Headers.Add(XToken, _token);
                 var httpResponse = await httpClient.SendAsync(httpRequest);
                 json = await httpResponse.Content.ReadAsStringAsync();
                 return JsonConvert.DeserializeObject<IEnumerable<StatementItem>>(json);
