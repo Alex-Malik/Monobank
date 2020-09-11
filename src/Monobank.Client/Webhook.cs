@@ -10,8 +10,6 @@ namespace Monobank.Client
         /// <param name="newHookUrl">A string representation of a new URL for the webhook.</param>
         internal Webhook(string newHookUrl)
         {
-            if (string.IsNullOrEmpty(newHookUrl))
-                throw new ArgumentNullException(nameof(newHookUrl));
             NewHookUrl = newHookUrl;
         }
 
