@@ -2,6 +2,9 @@
 
 namespace Monobank.Client
 {
+    /// <summary>
+    /// Represents data which is used to set a new webhook URL for the user.
+    /// </summary>
     internal class Webhook
     {
         /// <summary>

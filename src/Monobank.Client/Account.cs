@@ -2,6 +2,9 @@
 
 namespace Monobank.Client
 {
+    /// <summary>
+    /// Represents a user's account information.
+    /// </summary>
     public class Account
     {
         /// <summary>
