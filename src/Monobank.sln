@@ -2,8 +2,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Monobank.Client", "Monobank.Client\Monobank.Client.csproj", "{B673565D-964C-46E8-84BA-DFFFEB445789}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Monobank.Client.Console", "Monobank.Client.Console\Monobank.Client.Console.csproj", "{F12D1CCE-F916-42FB-A066-8FCE2FD98603}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -14,9 +12,5 @@ Global
 		{B673565D-964C-46E8-84BA-DFFFEB445789}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B673565D-964C-46E8-84BA-DFFFEB445789}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B673565D-964C-46E8-84BA-DFFFEB445789}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F12D1CCE-F916-42FB-A066-8FCE2FD98603}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F12D1CCE-F916-42FB-A066-8FCE2FD98603}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F12D1CCE-F916-42FB-A066-8FCE2FD98603}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F12D1CCE-F916-42FB-A066-8FCE2FD98603}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
