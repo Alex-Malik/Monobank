@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Net.Http;
 using Newtonsoft.Json;
 using System.Threading.Tasks;
@@ -17,7 +18,6 @@ namespace Monobank.Client
         private const string WebhookUrlPart = "/personal/webhook";
         private const string StatementUrlPart = "/personal/statement/{account}/{from}/{to}";
         private const string XToken = "X-Token";
-        private readonly string _token;
         private readonly HttpClient _httpClient;
 
         /// <summary>
@@ -30,11 +30,8 @@ namespace Monobank.Client
             if (string.IsNullOrEmpty(token))
                 throw new ArgumentNullException(nameof(token));
 
-            // TODO Maybe make test request? 
-
-            _token = token;
             _httpClient = new HttpClient();
-            _httpClient.DefaultRequestHeaders.Add(XToken, _token);
+            _httpClient.DefaultRequestHeaders.Add(XToken, token);
         }
 
         /// <summary>
@@ -46,11 +43,8 @@ namespace Monobank.Client
         {
             try
             {
-                var httpResponse = await _httpClient.GetAsync(UrlForCurrencyRates());
-
-                var json = await httpResponse.Content.ReadAsStringAsync();
-
-                return JsonConvert.DeserializeObject<IEnumerable<CurrencyInfo>>(json);
+                var response = await _httpClient.GetAsync(UrlForCurrencyRates());
+                return await HandleResponseAsync<IEnumerable<CurrencyInfo>>(response);
             }
             catch (Exception e)
             {
@@ -67,11 +61,8 @@ namespace Monobank.Client
         {
             try
             {
-                var httpResponse = await _httpClient.GetAsync(UrlForUserInfo());
-
-                var json = await httpResponse.Content.ReadAsStringAsync();
-
-                return JsonConvert.DeserializeObject<UserInfo>(json);
+                var response = await _httpClient.GetAsync(UrlForUserInfo());
+                return await HandleResponseAsync<UserInfo>(response);
             }
             catch (Exception e)
             {
@@ -94,13 +85,13 @@ namespace Monobank.Client
         {
             if (string.IsNullOrEmpty(newHookUrl))
                 throw new ArgumentNullException(newHookUrl);
+
             var webhook = new Webhook(newHookUrl);
 
             try
             {
                 var response = await _httpClient.PostAsync(UrlForWebhook(), ConvertToJsonContent(webhook));
-                
-                // TODO Handle Errors.
+                await HandleResponseAsync(response);
             }
             catch (Exception e)
             {
@@ -125,11 +116,8 @@ namespace Monobank.Client
 
             try
             {
-                var httpResponse = await _httpClient.GetAsync(UrlForStatement(account, from, to));
-                
-                var json = await httpResponse.Content.ReadAsStringAsync();
-                
-                return JsonConvert.DeserializeObject<IEnumerable<StatementItem>>(json);
+                var response = await _httpClient.GetAsync(UrlForStatement(account, from, to));
+                return await HandleResponseAsync<IEnumerable<StatementItem>>(response);
             }
             catch (Exception e)
             {
@@ -155,6 +143,27 @@ namespace Monobank.Client
         {
             //return new StringContent(JsonConvert.SerializeObject(value), Encoding.UTF8, "application/json");
             return new StringContent(JsonConvert.SerializeObject(value));
+        }
+
+        private Task HandleResponseAsync(HttpResponseMessage response)
+        {
+            return response.StatusCode switch
+            {
+                HttpStatusCode.OK => Task.CompletedTask,
+                _ => throw new MonobankException(String.Empty)
+            };
+        }
+
+        private async Task<T> HandleResponseAsync<T>(HttpResponseMessage response)
+        {
+            switch (response.StatusCode)
+            {
+                case HttpStatusCode.OK:
+                    var json = await response.Content.ReadAsStringAsync();
+                    return JsonConvert.DeserializeObject<T>(json);
+                default:
+                    throw new MonobankException(String.Empty);
+            }
         }
     }
 }
