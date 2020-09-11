@@ -11,7 +11,7 @@ namespace Monobank.Client
     /// </summary>
     public class Monobank
     {
-        private const string MonobankBaseUrl = "https://api.monobank.ua/";
+        private const string MonobankBaseUrl = "https://api.monobank.ua";
         private const string BankCurrencyUrlPart = "/bank/currency";
         private const string UserInfoUrlPart = "/personal/client-info";
         private const string WebhookUrlPart = "/personal/webhook";
@@ -44,8 +44,7 @@ namespace Monobank.Client
             try
             {
                 var httpClient = new HttpClient();
-                var httpRequest = new HttpRequestMessage(HttpMethod.Get, MonobankBaseUrl + BankCurrencyUrlPart);
-                var httpResponse = await httpClient.SendAsync(httpRequest);
+                var httpResponse = await httpClient.GetAsync(UrlForCurrencyRates());
 
                 var json = await httpResponse.Content.ReadAsStringAsync();
 
@@ -67,9 +66,9 @@ namespace Monobank.Client
             try
             {
                 var httpClient = new HttpClient();
-                var httpRequest = new HttpRequestMessage(HttpMethod.Get, MonobankBaseUrl + UserInfoUrlPart);
-                httpRequest.Headers.Add(XToken, _token);
-                var httpResponse = await httpClient.SendAsync(httpRequest);
+                httpClient.DefaultRequestHeaders.Add(XToken, _token);
+                
+                var httpResponse = await httpClient.GetAsync(UrlForUserInfo());
 
                 var json = await httpResponse.Content.ReadAsStringAsync();
 
@@ -101,10 +100,11 @@ namespace Monobank.Client
             try
             {
                 var httpClient = new HttpClient();
-                var httpRequest = new HttpRequestMessage(HttpMethod.Post, MonobankBaseUrl + WebhookUrlPart);
-                httpRequest.Headers.Add(XToken, _token);
-                httpRequest.Content = new StringContent(JsonConvert.SerializeObject(webhook));
-                await httpClient.SendAsync(httpRequest);
+                httpClient.DefaultRequestHeaders.Add(XToken, _token);
+                
+                var response = await httpClient.PostAsync(UrlForWebhook(), ConvertToJsonContent(webhook));
+                
+                // TODO Handle Errors.
             }
             catch (Exception e)
             {
@@ -132,20 +132,38 @@ namespace Monobank.Client
             try
             {
                 var httpClient = new HttpClient();
-                var httpRequest = new HttpRequestMessage(HttpMethod.Post,
-                    MonobankBaseUrl + StatementUrlPart
-                        .Replace("{account}", account)
-                        .Replace("{from}", new DateTimeOffset(from).ToUnixTimeSeconds().ToString())
-                        .Replace("{to}", new DateTimeOffset(to).ToUnixTimeSeconds().ToString()));
-                httpRequest.Headers.Add(XToken, _token);
-                var httpResponse = await httpClient.SendAsync(httpRequest);
-                json = await httpResponse.Content.ReadAsStringAsync();
+                httpClient.DefaultRequestHeaders.Add(XToken, _token);
+                
+                var httpResponse = await httpClient.GetAsync(UrlForStatement(account, from, to));
+                
+                var json = await httpResponse.Content.ReadAsStringAsync();
+                
                 return JsonConvert.DeserializeObject<IEnumerable<StatementItem>>(json);
             }
             catch (Exception e)
             {
                 throw new MonobankException(e);
             }
+        }
+
+        private HttpContent ConvertToJsonContent(object value)
+        {
+            //return new StringContent(JsonConvert.SerializeObject(value), Encoding.UTF8, "application/json");
+            return new StringContent(JsonConvert.SerializeObject(value));
+        }
+
+        private string UrlForCurrencyRates() => MonobankBaseUrl + BankCurrencyUrlPart;
+
+        private string UrlForUserInfo() => MonobankBaseUrl + UserInfoUrlPart;
+
+        private string UrlForWebhook() => MonobankBaseUrl + WebhookUrlPart;
+
+        private string UrlForStatement(string account, DateTime from, DateTime to)
+        {
+            return MonobankBaseUrl + StatementUrlPart
+                .Replace("{account}", account)
+                .Replace("{from}", new DateTimeOffset(from).ToUnixTimeSeconds().ToString())
+                .Replace("{to}", new DateTimeOffset(to).ToUnixTimeSeconds().ToString());
         }
     }
 }
