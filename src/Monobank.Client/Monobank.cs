@@ -18,6 +18,7 @@ namespace Monobank.Client
         private const string StatementUrlPart = "/personal/statement/{account}/{from}/{to}";
         private const string XToken = "X-Token";
         private readonly string _token;
+        private readonly HttpClient _httpClient;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Monobank"/> class with the personal token used to authenticate a person who makes a request.
@@ -32,6 +33,8 @@ namespace Monobank.Client
             // TODO Maybe make test request? 
 
             _token = token;
+            _httpClient = new HttpClient();
+            _httpClient.DefaultRequestHeaders.Add(XToken, _token);
         }
 
         /// <summary>
@@ -43,8 +46,7 @@ namespace Monobank.Client
         {
             try
             {
-                var httpClient = new HttpClient();
-                var httpResponse = await httpClient.GetAsync(UrlForCurrencyRates());
+                var httpResponse = await _httpClient.GetAsync(UrlForCurrencyRates());
 
                 var json = await httpResponse.Content.ReadAsStringAsync();
 
@@ -65,10 +67,7 @@ namespace Monobank.Client
         {
             try
             {
-                var httpClient = new HttpClient();
-                httpClient.DefaultRequestHeaders.Add(XToken, _token);
-                
-                var httpResponse = await httpClient.GetAsync(UrlForUserInfo());
+                var httpResponse = await _httpClient.GetAsync(UrlForUserInfo());
 
                 var json = await httpResponse.Content.ReadAsStringAsync();
 
@@ -99,10 +98,7 @@ namespace Monobank.Client
 
             try
             {
-                var httpClient = new HttpClient();
-                httpClient.DefaultRequestHeaders.Add(XToken, _token);
-                
-                var response = await httpClient.PostAsync(UrlForWebhook(), ConvertToJsonContent(webhook));
+                var response = await _httpClient.PostAsync(UrlForWebhook(), ConvertToJsonContent(webhook));
                 
                 // TODO Handle Errors.
             }
@@ -125,16 +121,11 @@ namespace Monobank.Client
         {
             if (string.IsNullOrEmpty(account))
                 throw new ArgumentNullException(nameof(account));
-
-            // Is here to see json value outside of try block.
-            string json = null;
+            // TODO Validate difference between from and to values.
 
             try
             {
-                var httpClient = new HttpClient();
-                httpClient.DefaultRequestHeaders.Add(XToken, _token);
-                
-                var httpResponse = await httpClient.GetAsync(UrlForStatement(account, from, to));
+                var httpResponse = await _httpClient.GetAsync(UrlForStatement(account, from, to));
                 
                 var json = await httpResponse.Content.ReadAsStringAsync();
                 
@@ -144,12 +135,6 @@ namespace Monobank.Client
             {
                 throw new MonobankException(e);
             }
-        }
-
-        private HttpContent ConvertToJsonContent(object value)
-        {
-            //return new StringContent(JsonConvert.SerializeObject(value), Encoding.UTF8, "application/json");
-            return new StringContent(JsonConvert.SerializeObject(value));
         }
 
         private string UrlForCurrencyRates() => MonobankBaseUrl + BankCurrencyUrlPart;
@@ -164,6 +149,12 @@ namespace Monobank.Client
                 .Replace("{account}", account)
                 .Replace("{from}", new DateTimeOffset(from).ToUnixTimeSeconds().ToString())
                 .Replace("{to}", new DateTimeOffset(to).ToUnixTimeSeconds().ToString());
+        }
+
+        private HttpContent ConvertToJsonContent(object value)
+        {
+            //return new StringContent(JsonConvert.SerializeObject(value), Encoding.UTF8, "application/json");
+            return new StringContent(JsonConvert.SerializeObject(value));
         }
     }
 }
