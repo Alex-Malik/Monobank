@@ -15,7 +15,7 @@ namespace Monobank.Client
         /// <param name="webHookUrl">The webhook URL. The webhook is used to send information about new transactions.</param>
         /// <param name="accounts">The enumeration of available user accounts.</param>
         [JsonConstructor]
-        public UserInfo(string name, string webHookUrl, IEnumerable<Account> accounts)
+        internal UserInfo(string name, string webHookUrl, IEnumerable<Account> accounts)
         {
             Name = name;
             WebHookUrl = webHookUrl;

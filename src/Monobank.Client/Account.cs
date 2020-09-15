@@ -16,7 +16,7 @@ namespace Monobank.Client
         /// <param name="currencyCode">The currency code according to ISO 4217.</param>
         /// <param name="cashbackType">The type of the cashback ("None", "UAH", "Miles").</param>
         [JsonConstructor]
-        public Account(string id, long balance, long creditLimit, int currencyCode, string cashbackType)
+        internal Account(string id, long balance, long creditLimit, int currencyCode, string cashbackType)
         {
             Id = id;
             Balance = balance;

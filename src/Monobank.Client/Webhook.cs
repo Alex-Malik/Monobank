@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Monobank.Client
+﻿namespace Monobank.Client
 {
     /// <summary>
     /// Represents data which is used to set a new webhook URL for the user.
