@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace Monobank.Client
+namespace Monobank
 {
     /// <summary>
     /// Represents the information about a user and the list of the user accounts.

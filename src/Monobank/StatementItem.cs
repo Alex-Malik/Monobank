@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace Monobank.Client
+namespace Monobank
 {
     /// <summary>
     /// Represents the transaction belonging to the account for which the statement is requested.

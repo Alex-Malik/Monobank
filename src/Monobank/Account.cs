@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace Monobank.Client
+namespace Monobank
 {
     /// <summary>
     /// Represents a user's account information.

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Monobank.Client
+namespace Monobank
 {
     /// <summary>
     /// Represents errors occured during <see cref="Monobank"/> execution. 

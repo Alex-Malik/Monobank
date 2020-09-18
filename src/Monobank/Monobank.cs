@@ -5,7 +5,7 @@ using System.Net.Http;
 using Newtonsoft.Json;
 using System.Threading.Tasks;
 
-namespace Monobank.Client
+namespace Monobank
 {
     /// <summary>
     /// Provides methods to communicate with Monobank's API.
