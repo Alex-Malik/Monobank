@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net.Http;
 
 namespace Monobank
 {
@@ -21,6 +22,14 @@ namespace Monobank
         /// <param name="exception">The error message.</param>
         internal MonobankException(string message) : base(message)
         {
+        }
+    }
+
+    public class MonobankRequestException : MonobankException
+    {
+        internal MonobankRequestException(HttpRequestException exception) : base(exception)
+        {
+            
         }
     }
 }

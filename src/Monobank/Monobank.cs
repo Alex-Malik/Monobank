@@ -38,15 +38,12 @@ namespace Monobank
         /// <exception cref="MonobankException"></exception>
         public async Task<IEnumerable<CurrencyInfo>> GetCurrencyRatesAsync()
         {
-            try
+            var (code, body) = await GetAsync(API.Bank.Currency);
+            return code switch
             {
-                var response = await GetAsync(API.Bank.Currency);
-                return JsonConvert.DeserializeObject<IEnumerable<CurrencyInfo>>(response.Body);
-            }
-            catch (Exception e)
-            {
-                throw new MonobankException(e);
-            }
+                200 => JsonConvert.DeserializeObject<IEnumerable<CurrencyInfo>>(body),
+                _ => throw new NotSupportedException()
+            };
         }
 
         /// <summary>
@@ -56,15 +53,12 @@ namespace Monobank
         /// <exception cref="MonobankException"></exception>
         public async Task<UserInfo> GetUserInfo()
         {
-            try
+            var (code, body) = await GetAsync(API.Personal.ClientInfo);
+            return code switch
             {
-                var response = await GetAsync(API.Personal.ClientInfo);
-                return JsonConvert.DeserializeObject<UserInfo>(response.Body);
-            }
-            catch (Exception e)
-            {
-                throw new MonobankException(e);
-            }
+                200 => JsonConvert.DeserializeObject<UserInfo>(body),
+                _ => throw new NotSupportedException()
+            };
         }
 
         /// <summary>
@@ -85,14 +79,9 @@ namespace Monobank
 
             var webhook = new Webhook(newHookUrl);
 
-            try
-            {
-                var response = await PostAsync(API.Personal.Webhook, webhook);
-            }
-            catch (Exception e)
-            {
-                throw new MonobankException(e);
-            }
+            var (code, _) = await PostAsync(API.Personal.Webhook, webhook);
+            if (code != 200)
+                throw new MonobankException("Something went wrong.");
         }
 
         /// <summary>
@@ -110,37 +99,48 @@ namespace Monobank
                 throw new ArgumentNullException(nameof(account));
             // TODO Validate difference between from and to values.
 
+            var (code, body) = await GetAsync(API.Personal.Statement(account, @from, to));
+            return code switch
+            {
+                200 => JsonConvert.DeserializeObject<IEnumerable<StatementItem>>(body),
+                _ => throw new NotSupportedException()
+            };
+        }
+
+        private async Task<(int Code, string Body)> GetAsync(string url)
+        {
             try
             {
-                var response = await GetAsync(API.Personal.Statement(account, from, to));
-                return JsonConvert.DeserializeObject<IEnumerable<StatementItem>>(response.Body);
+                var response = await _httpClient.GetAsync(url);
+                return (
+                    Code: (int)response.StatusCode, 
+                    Body: await response.Content.ReadAsStringAsync());
+            
+                // TODO Consider throw an exception on any not 200 status.
             }
-            catch (Exception e)
+            catch (HttpRequestException exception)
             {
-                throw new MonobankException(e);
+                throw new MonobankRequestException(exception);
             }
         }
 
-        private async Task<(HttpStatusCode Code, string Body)> GetAsync(string url)
+        private async Task<(int Code, string Body)> PostAsync<T>(string url, T value)
         {
-            var response = await _httpClient.GetAsync(url);
-            return (
-                Code: response.StatusCode, 
-                Body: await response.Content.ReadAsStringAsync());
+            try
+            {
+                var jsonString = JsonConvert.SerializeObject(value, Formatting.None);
+                var content = new StringContent(jsonString, Encoding.UTF8, MediaTypeNames.Application.Json);
+                var response = await _httpClient.PostAsync(url, content);
+                return (
+                    Code: (int)response.StatusCode, 
+                    Body: await response.Content.ReadAsStringAsync());
             
-            // TODO Consider throw an exception on any not 200 status.
-        }
-
-        private async Task<(HttpStatusCode Code, string Body)> PostAsync<T>(string url, T value)
-        {
-            var jsonString = JsonConvert.SerializeObject(value, Formatting.None);
-            var content = new StringContent(jsonString, Encoding.UTF8, MediaTypeNames.Application.Json);
-            var response = await _httpClient.PostAsync(url, content);
-            return (
-                Code: response.StatusCode, 
-                Body: await response.Content.ReadAsStringAsync());
-            
-            // TODO Consider throw an exception on any not 200 status.
+                // TODO Consider throw an exception on any not 200 status.
+            }
+            catch (HttpRequestException exception)
+            {
+                throw new MonobankRequestException(exception);
+            }
         }
 
         private static class API
