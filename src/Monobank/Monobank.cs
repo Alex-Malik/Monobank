@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
+using System.Net.Mime;
+using System.Text;
 using Newtonsoft.Json;
 using System.Threading.Tasks;
 
@@ -12,12 +14,6 @@ namespace Monobank
     /// </summary>
     public class Monobank
     {
-        private const string MonobankBaseUrl = "https://api.monobank.ua";
-        private const string BankCurrencyUrlPart = "/bank/currency";
-        private const string UserInfoUrlPart = "/personal/client-info";
-        private const string WebhookUrlPart = "/personal/webhook";
-        private const string StatementUrlPart = "/personal/statement/{account}/{from}/{to}";
-        private const string XToken = "X-Token";
         private readonly HttpClient _httpClient;
 
         /// <summary>
@@ -31,7 +27,8 @@ namespace Monobank
                 throw new ArgumentNullException(nameof(token));
 
             _httpClient = new HttpClient();
-            _httpClient.DefaultRequestHeaders.Add(XToken, token);
+            _httpClient.BaseAddress = new Uri(API.Production);
+            _httpClient.DefaultRequestHeaders.Add(RequestHeaders.XToken, token);
         }
 
         /// <summary>
@@ -43,8 +40,8 @@ namespace Monobank
         {
             try
             {
-                var response = await _httpClient.GetAsync(UrlForCurrencyRates());
-                return await HandleResponseAsync<IEnumerable<CurrencyInfo>>(response);
+                var response = await GetAsync(API.Bank.Currency);
+                return JsonConvert.DeserializeObject<IEnumerable<CurrencyInfo>>(response.Body);
             }
             catch (Exception e)
             {
@@ -61,8 +58,8 @@ namespace Monobank
         {
             try
             {
-                var response = await _httpClient.GetAsync(UrlForUserInfo());
-                return await HandleResponseAsync<UserInfo>(response);
+                var response = await GetAsync(API.Personal.ClientInfo);
+                return JsonConvert.DeserializeObject<UserInfo>(response.Body);
             }
             catch (Exception e)
             {
@@ -90,8 +87,7 @@ namespace Monobank
 
             try
             {
-                var response = await _httpClient.PostAsync(UrlForWebhook(), ConvertToJsonContent(webhook));
-                await HandleResponseAsync(response);
+                var response = await PostAsync(API.Personal.Webhook, webhook);
             }
             catch (Exception e)
             {
@@ -116,8 +112,8 @@ namespace Monobank
 
             try
             {
-                var response = await _httpClient.GetAsync(UrlForStatement(account, from, to));
-                return await HandleResponseAsync<IEnumerable<StatementItem>>(response);
+                var response = await GetAsync(API.Personal.Statement(account, from, to));
+                return JsonConvert.DeserializeObject<IEnumerable<StatementItem>>(response.Body);
             }
             catch (Exception e)
             {
@@ -125,45 +121,55 @@ namespace Monobank
             }
         }
 
-        private string UrlForCurrencyRates() => MonobankBaseUrl + BankCurrencyUrlPart;
-
-        private string UrlForUserInfo() => MonobankBaseUrl + UserInfoUrlPart;
-
-        private string UrlForWebhook() => MonobankBaseUrl + WebhookUrlPart;
-
-        private string UrlForStatement(string account, DateTime from, DateTime to)
+        private async Task<(HttpStatusCode Code, string Body)> GetAsync(string url)
         {
-            return MonobankBaseUrl + StatementUrlPart
-                .Replace("{account}", account)
-                .Replace("{from}", new DateTimeOffset(from).ToUnixTimeSeconds().ToString())
-                .Replace("{to}", new DateTimeOffset(to).ToUnixTimeSeconds().ToString());
+            var response = await _httpClient.GetAsync(url);
+            return (
+                Code: response.StatusCode, 
+                Body: await response.Content.ReadAsStringAsync());
+            
+            // TODO Consider throw an exception on any not 200 status.
         }
 
-        private HttpContent ConvertToJsonContent(object value)
+        private async Task<(HttpStatusCode Code, string Body)> PostAsync<T>(string url, T value)
         {
-            //return new StringContent(JsonConvert.SerializeObject(value), Encoding.UTF8, "application/json");
-            return new StringContent(JsonConvert.SerializeObject(value));
+            var jsonString = JsonConvert.SerializeObject(value, Formatting.None);
+            var content = new StringContent(jsonString, Encoding.UTF8, MediaTypeNames.Application.Json);
+            var response = await _httpClient.PostAsync(url, content);
+            return (
+                Code: response.StatusCode, 
+                Body: await response.Content.ReadAsStringAsync());
+            
+            // TODO Consider throw an exception on any not 200 status.
         }
 
-        private Task HandleResponseAsync(HttpResponseMessage response)
+        private static class API
         {
-            return response.StatusCode switch
+            public const string Production = "https://api.monobank.ua";
+            
+            public static class Bank
             {
-                HttpStatusCode.OK => Task.CompletedTask,
-                _ => throw new MonobankException(String.Empty)
-            };
-        }
-
-        private async Task<T> HandleResponseAsync<T>(HttpResponseMessage response)
-        {
-            switch (response.StatusCode)
-            {
-                case HttpStatusCode.OK:
-                    var json = await response.Content.ReadAsStringAsync();
-                    return JsonConvert.DeserializeObject<T>(json);
-                default:
-                    throw new MonobankException(String.Empty);
+                public const string Currency = "/bank/currency";
             }
+
+            public static class Personal
+            {
+                public const string ClientInfo = "/personal/client-info";
+                public const string Webhook = "/personal/webhook";
+
+                public static string Statement(string account, DateTime from, DateTime to)
+                {
+                    return "/personal/statement/{account}/{from}/{to}"
+                        .Replace("{account}", account)
+                        .Replace("{from}", new DateTimeOffset(from).ToUnixTimeSeconds().ToString())
+                        .Replace("{to}", new DateTimeOffset(to).ToUnixTimeSeconds().ToString());
+                }
+            }
+        }
+
+        private static class RequestHeaders
+        {
+            public const string XToken = "X-Token";
         }
     }
 }
