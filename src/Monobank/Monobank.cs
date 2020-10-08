@@ -51,7 +51,7 @@ namespace Monobank
         /// </summary>
         /// <returns>The <see cref="UserInfo"/> object containing client's personal information and accounts.</returns>
         /// <exception cref="MonobankException"></exception>
-        public async Task<UserInfo> GetUserInfo()
+        public async Task<UserInfo> GetUserInfoAsync()
         {
             var (code, body) = await GetAsync(API.Personal.ClientInfo);
             return code switch
