@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Net.Http;
 
 namespace Monobank
 {
@@ -12,7 +11,7 @@ namespace Monobank
         /// Initializes a new instance of the <see cref="MonobankException"/> class with a reference to the wrapped exception.
         /// </summary>
         /// <param name="exception">The exception which is wrapped by this instance of <see cref="MonobankException"/>.</param>
-        internal MonobankException(Exception exception) : base(null, exception)
+        internal MonobankException(string message, Exception exception) : base(message, exception)
         {
         }
         
@@ -22,14 +21,6 @@ namespace Monobank
         /// <param name="exception">The error message.</param>
         internal MonobankException(string message) : base(message)
         {
-        }
-    }
-
-    public class MonobankRequestException : MonobankException
-    {
-        internal MonobankRequestException(HttpRequestException exception) : base(exception)
-        {
-            
         }
     }
 }
