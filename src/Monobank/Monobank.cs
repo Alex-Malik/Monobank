@@ -4,11 +4,12 @@ using System.Net.Http;
 using System.Net.Mime;
 using System.Text;
 using System.Threading.Tasks;
-using Monobank.Exceptions;
 using Newtonsoft.Json;
 
 namespace Monobank
 {
+    using Exceptions;
+    
     /// <summary>
     /// Provides methods to communicate with Monobank's API.
     /// </summary>
