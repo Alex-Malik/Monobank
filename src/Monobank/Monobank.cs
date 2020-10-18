@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Net.Mime;
 using System.Text;
 using System.Threading.Tasks;
+using Monobank.Exceptions;
 using Newtonsoft.Json;
 
 namespace Monobank
@@ -82,7 +83,7 @@ namespace Monobank
 
             var (code, _) = await PostAsync(API.Personal.Webhook, webhook);
             if (code != 200)
-                throw new MonobankException("Something went wrong.");
+                throw new NotSupportedException();
         }
 
         /// <summary>
