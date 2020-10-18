@@ -23,4 +23,35 @@ namespace Monobank
         {
         }
     }
+
+    /// <summary>
+    /// Represents error caused by invalid account value. It could be null value or empty string.
+    /// </summary>
+    public class InvalidAccountException : MonobankException
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InvalidAccountException"/> class.
+        /// </summary>
+        internal InvalidAccountException() : base(String.Empty) {}
+    }
+    
+    public class InvalidStatementPeriodException : MonobankException
+    {
+        internal InvalidStatementPeriodException() : base(String.Empty) {}
+    }
+
+    public class ToFrequentCallException : MonobankException
+    {
+        internal ToFrequentCallException() : base(string.Empty) {}
+    }
+
+    public class InvalidWebhookUrlException : MonobankException
+    {
+        internal InvalidWebhookUrlException() : base(string.Empty) {}
+    }
+
+    public class InvalidTokenException : MonobankException
+    {
+        internal InvalidTokenException() : base(string.Empty){}
+    }
 }
