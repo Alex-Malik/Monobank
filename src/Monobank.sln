@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Monobank", "Monobank\Monobank.csproj", "{B673565D-964C-46E8-84BA-DFFFEB445789}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Monobank.Tests", "Monobank.Tests\Monobank.Tests.csproj", "{86A21744-B212-46E0-ACBC-64847D1C9EFA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +14,9 @@ Global
 		{B673565D-964C-46E8-84BA-DFFFEB445789}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B673565D-964C-46E8-84BA-DFFFEB445789}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B673565D-964C-46E8-84BA-DFFFEB445789}.Release|Any CPU.Build.0 = Release|Any CPU
+		{86A21744-B212-46E0-ACBC-64847D1C9EFA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{86A21744-B212-46E0-ACBC-64847D1C9EFA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{86A21744-B212-46E0-ACBC-64847D1C9EFA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{86A21744-B212-46E0-ACBC-64847D1C9EFA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
