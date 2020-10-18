@@ -15,6 +15,7 @@ namespace Monobank
     public class Monobank
     {
         private readonly HttpClient _httpClient;
+        private readonly DateTime? _lastTimeGetStatementCalled;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Monobank"/> class with the personal token used to authenticate a person who makes a request.
@@ -97,7 +98,10 @@ namespace Monobank
         {
             if (string.IsNullOrEmpty(account))
                 throw new ArgumentNullException(nameof(account));
-            // TODO Validate difference between from and to values.
+            if (IsValidInterval())
+                throw new MonobankException("The max period is 31 day + 1 hour.");
+            if (IsCallAvailable())
+                throw new MonobankException("Statement can be called ");
 
             var (code, body) = await GetAsync(API.Personal.Statement(account, @from, to));
             return code switch
@@ -105,6 +109,11 @@ namespace Monobank
                 200 => JsonConvert.DeserializeObject<IEnumerable<StatementItem>>(body),
                 _ => throw new NotSupportedException()
             };
+
+            bool IsValidInterval() => (to - @from).TotalSeconds > Validation.MaxStatementTimeSpanInSeconds;
+
+            bool IsCallAvailable() => _lastTimeGetStatementCalled.HasValue
+                                      && (DateTime.UtcNow - _lastTimeGetStatementCalled.Value).TotalSeconds > Validation.StatementTimeoutBetweenCallsInSeconds;
         }
 
         private async Task<(int Code, string Body)> GetAsync(string url)
@@ -170,6 +179,12 @@ namespace Monobank
         private static class RequestHeaders
         {
             public const string XToken = "X-Token";
+        }
+
+        private static class Validation
+        {
+            public const int MaxStatementTimeSpanInSeconds = 2682000;
+            public const int StatementTimeoutBetweenCallsInSeconds = 60;
         }
     }
 }
