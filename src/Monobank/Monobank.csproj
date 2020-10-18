@@ -3,6 +3,12 @@
     <PropertyGroup>
         <TargetFramework>netcoreapp3.1</TargetFramework>
         <Authors>Alex Malik</Authors>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <Title>Monobank</Title>
+        <Copyright>Alex Malik</Copyright>
+        <RepositoryUrl>https://github.com/Alex-Malik/Monobank</RepositoryUrl>
+        <PackageProjectUrl>https://github.com/Alex-Malik/Monobank</PackageProjectUrl>
+        <PackageLicenseUrl>https://github.com/Alex-Malik/Monobank/blob/master/LICENSE</PackageLicenseUrl>
     </PropertyGroup>
 
     <ItemGroup>
