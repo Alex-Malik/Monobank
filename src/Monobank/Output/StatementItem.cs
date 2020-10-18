@@ -42,52 +42,52 @@ namespace Monobank
         /// Gets the unique identifier of the transaction.
         /// </summary>
         public string Id { get; }
-        
+
         /// <summary>
         /// Gets the time of the transaction in seconds in Unix format.
         /// </summary>
         public long Time { get; }
-        
+
         /// <summary>
         /// Gets the description of the transaction.
         /// </summary>
         public string Description { get; }
-        
+
         /// <summary>
         /// Gets the Merchant Category Code according to ISO 18245.
         /// </summary>
         public int Mcc { get; }
-        
+
         /// <summary>
         /// Gets the value indicating whether transaction authorization hold.
         /// </summary>
         public bool Hold { get; }
-        
+
         /// <summary>
         /// Gets the amount of the transaction in the minimum units (coins, cents) of the account currency.
         /// </summary>
         public long Amount { get; }
-        
+
         /// <summary>
         /// Gets the amount of the transaction in the minimum units (coins, cents) of the transaction currency.
         /// </summary>
         public long OperationAmount { get; }
-        
+
         /// <summary>
         /// Gets the currency code according to ISO 4217.
         /// </summary>
         public int CurrencyCode { get; }
-        
+
         /// <summary>
         /// Gets the commission rate in the minimum units (coins, cents) of the currency.
         /// </summary>
         public long CommissionRate { get; }
-        
+
         /// <summary>
         /// Gets the cashback amount in the minimum units (coins, cents) of the currency.
         /// </summary>
         public long CashbackAmount { get; }
-        
+
         /// <summary>
         /// Gets the balance of the account in the minimum units (coins, cents) of the currency.
         /// </summary>
