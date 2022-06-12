@@ -10,6 +10,7 @@
         <PackageProjectUrl>https://github.com/Alex-Malik/Monobank</PackageProjectUrl>
         <PackageLicenseUrl>https://github.com/Alex-Malik/Monobank/blob/master/LICENSE</PackageLicenseUrl>
         <PackageIcon>monobank.png</PackageIcon>
+        <PackageVersion>1.0.1</PackageVersion>
     </PropertyGroup>
 
     <ItemGroup>
