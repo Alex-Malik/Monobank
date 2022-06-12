@@ -9,10 +9,18 @@
         <RepositoryUrl>https://github.com/Alex-Malik/Monobank</RepositoryUrl>
         <PackageProjectUrl>https://github.com/Alex-Malik/Monobank</PackageProjectUrl>
         <PackageLicenseUrl>https://github.com/Alex-Malik/Monobank/blob/master/LICENSE</PackageLicenseUrl>
+        <PackageIcon>monobank.png</PackageIcon>
     </PropertyGroup>
 
     <ItemGroup>
       <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="monobank.png">
+        <Pack>True</Pack>
+        <PackagePath></PackagePath>
+      </None>
     </ItemGroup>
 
 </Project>
