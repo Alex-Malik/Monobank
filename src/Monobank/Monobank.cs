@@ -22,15 +22,37 @@ namespace Monobank
         /// Initializes a new instance of the <see cref="Monobank"/> class with the personal token used
         /// to authenticate a person who makes a request.
         /// </summary>
-        /// <param name="token">The token used to authenticate a person.</param>
-        /// <exception cref="InvalidTokenException">Thrown if <paramref name="token"/> is null or empty string.</exception>
+        /// <param name="token">used to authenticate a person.</param>
+        /// <exception cref="InvalidTokenException">thrown if <paramref name="token"/> is null or empty string.</exception>
         public Monobank(string token)
         {
             if (string.IsNullOrEmpty(token))
-                throw new InvalidTokenException();
+                throw new ArgumentNullException(nameof(token));
 
             _httpClient = new HttpClient();
             _httpClient.BaseAddress = new Uri(API.Production);
+            _httpClient.DefaultRequestHeaders.Clear();
+            _httpClient.DefaultRequestHeaders.Add(RequestHeaders.XToken, token);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Monobank"/> class with the personal token used
+        /// to authenticate a person who makes a request and a custom implementation of the <see cref="HttpClient"/> class.
+        /// </summary>
+        /// <param name="token">used to authenticate a person.</param>
+        /// <param name="httpClient">the implementation of <see cref="HttpClient"/>.</param>
+        /// <exception cref="InvalidTokenException">thrown if <paramref name="token"/> is null or empty string.</exception>
+        /// <exception cref="ArgumentNullException">thrown if <paramref name="httpClient"/> is null.</exception>
+        public Monobank(string token, HttpClient httpClient)
+        {
+            if (string.IsNullOrEmpty(token))
+                throw new ArgumentNullException(nameof(token));
+            if (httpClient == null)
+                throw new ArgumentNullException(nameof(httpClient));
+
+            _httpClient = httpClient;
+            _httpClient.BaseAddress = new Uri(API.Production);
+            _httpClient.DefaultRequestHeaders.Clear();
             _httpClient.DefaultRequestHeaders.Add(RequestHeaders.XToken, token);
         }
 
