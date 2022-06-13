@@ -1,9 +1,7 @@
-# Monobank ![Nuget](https://img.shields.io/nuget/v/monobank)
+# Monobank
 Friendly C# library which makes it easy for you to interect with [Monobank API](https://api.monobank.ua/docs/) 🐈‍
 ## Installation
-```
-nuget install Monobank
-```
+![Nuget](https://img.shields.io/nuget/v/monobank)
 ## Usage
 Please reference to the Monobank [official documentation](https://api.monobank.ua/docs/) 🐈‍⬛ to find answers to most common questions about how the Monobank API itself works.
 To see the usage examples for this library please read the sections below ⬇️
