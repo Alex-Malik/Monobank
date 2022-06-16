@@ -68,6 +68,7 @@ namespace Monobank
             return code switch
             {
                 200 => JsonConvert.DeserializeObject<IEnumerable<CurrencyInfo>>(body),
+                429 => throw new NotImplementedException("To many requests"),
                 _ => throw new NotSupportedException()
             };
         }
@@ -83,6 +84,7 @@ namespace Monobank
             return code switch
             {
                 200 => JsonConvert.DeserializeObject<UserInfo>(body),
+                403 => throw new InvalidTokenException(),
                 _ => throw new NotSupportedException()
             };
         }

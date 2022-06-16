@@ -8,7 +8,7 @@
         /// <summary>
         /// Initializes a new instance of the <see cref="InvalidAccountException"/> class.
         /// </summary>
-        internal InvalidTokenException() : base("The token is required and cannot be the empty string.")
+        internal InvalidTokenException() : base("The provided token is not recognized by Monobank API.")
         {
         }
     }
