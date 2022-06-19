@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Monobank.Exceptions;
 using Xunit;
@@ -55,10 +56,28 @@ namespace Monobank.Tests
         }
         
         [Fact]
-        public async Task GetUserInfoAsync_WrongToken_ReturnsUserInfo()
+        public async Task GetUserInfoAsync_WrongToken_ThrowsInvalidTokenException()
         {
-            var monobank = new Monobank("123");
-            Assert.ThrowsAsync<InvalidTokenException>(() => monobank.GetUserInfoAsync());
+            Assert.ThrowsAsync<InvalidTokenException>(() => new Monobank("123").GetUserInfoAsync());
+        }
+
+        [Fact]
+        public async Task GetStatementAsync_Called_ReturnsStatementItems()
+        {
+            var monobank = new Monobank(Token);
+            var user = await monobank.GetUserInfoAsync();
+            var accountId = user.Accounts.First().Id;
+            var from = DateTime.Parse("2022-01-01 00:00:00");
+            var to = DateTime.Parse("2022-01-31 23:59:59");
+            var result = await monobank.GetStatementAsync(accountId, from, to);
+            Assert.NotEmpty(result);
+        }
+        
+        [Fact]
+        public async Task GetStatementAsync_WrongToken_ThrowsInvalidTokenException()
+        {
+            Assert.ThrowsAsync<InvalidTokenException>(async () 
+                => await new Monobank("123").GetStatementAsync("123", DateTime.Now, DateTime.Now));
         }
     }
 }
