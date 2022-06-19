@@ -30,7 +30,7 @@ namespace Monobank
                 throw new ArgumentNullException(nameof(token));
 
             _httpClient = new HttpClient();
-            _httpClient.BaseAddress = new Uri(API.Production);
+            _httpClient.BaseAddress = new Uri(Api.Production);
             _httpClient.DefaultRequestHeaders.Clear();
             _httpClient.DefaultRequestHeaders.Add(RequestHeaders.XToken, token);
         }
@@ -51,7 +51,7 @@ namespace Monobank
                 throw new ArgumentNullException(nameof(httpClient));
 
             _httpClient = httpClient;
-            _httpClient.BaseAddress = new Uri(API.Production);
+            _httpClient.BaseAddress = new Uri(Api.Production);
             _httpClient.DefaultRequestHeaders.Clear();
             _httpClient.DefaultRequestHeaders.Add(RequestHeaders.XToken, token);
         }
@@ -64,7 +64,7 @@ namespace Monobank
         /// <returns>The list of Monobank exchange rates represented by <see cref="CurrencyInfo"/> objects.</returns>
         public async Task<IEnumerable<CurrencyInfo>> GetCurrencyRatesAsync()
         {
-            var (code, body) = await GetAsync(API.Bank.Currency);
+            var (code, body) = await GetAsync(Api.Bank.Currency);
             return code switch
             {
                 200 => JsonConvert.DeserializeObject<IEnumerable<CurrencyInfo>>(body),
@@ -80,7 +80,7 @@ namespace Monobank
         /// <returns>The <see cref="UserInfo"/> object containing client's personal information and accounts.</returns>
         public async Task<UserInfo> GetUserInfoAsync()
         {
-            var (code, body) = await GetAsync(API.Personal.ClientInfo);
+            var (code, body) = await GetAsync(Api.Personal.ClientInfo);
             return code switch
             {
                 200 => JsonConvert.DeserializeObject<UserInfo>(body),
@@ -90,7 +90,7 @@ namespace Monobank
         }
 
         /// <summary>
-        /// Sets the URL which will be used to send POST requests of <see cref=""/> objects.
+        /// Sets the URL which will be used to send POST requests of <see cref="StatementItem"/> objects.
         /// <para/> 
         /// <para/>
         /// If the user service under the URL will not respond within 5 seconds the request will be send again in 60
@@ -106,7 +106,7 @@ namespace Monobank
 
             var webhook = new Webhook(newHookUrl);
 
-            var (code, _) = await PostAsync(API.Personal.Webhook, webhook);
+            var (code, _) = await PostAsync(Api.Personal.Webhook, webhook);
             if (code != 200)
                 throw new NotSupportedException();
         }
@@ -131,7 +131,7 @@ namespace Monobank
             if (IsCallAvailable())
                 throw new ToFrequentCallException();
 
-            var (code, body) = await GetAsync(API.Personal.Statement(account, @from, to));
+            var (code, body) = await GetAsync(Api.Personal.Statement(account, @from, to));
             return code switch
             {
                 200 => JsonConvert.DeserializeObject<IEnumerable<StatementItem>>(body),
@@ -145,9 +145,9 @@ namespace Monobank
         }
 
         /// <summary>
-        /// Sends GET request to the Monobank's API with given <see cref="url"/> or url path.
+        /// GETs data from the given <see cref="url"/> of Monobank's API.
         /// </summary>
-        /// <param name="url">The URL or URL path to which make a request.</param>
+        /// <param name="url">the URL of the request.</param>
         /// <exception cref="MonobankRequestException">Thrown if request to Monobank's API failed.</exception>
         /// <returns>Returns the tuple of HTTP Status Code and JSON Body received in response from Monobank's API.</returns>
         private async Task<(int Code, string Body)> GetAsync(string url)
@@ -168,16 +168,17 @@ namespace Monobank
         }
 
         /// <summary>
-        /// Sends POST request to the Monobank's API with given <see cref="url"/> or url path.
+        /// POSTs data to the given <see cref="url"/> of Monobank's API.
         /// </summary>
-        /// <param name="url">The URL or URL path to which make a request.</param>
+        /// <param name="url">the URL path to which the request will be made.</param>
+        /// <param name="data">the data which will be POSTed.</param>
         /// <exception cref="MonobankRequestException">Thrown if request to Monobank's API failed.</exception>
         /// <returns>Returns the tuple of HTTP Status Code and JSON Body received in response from Monobank's API.</returns>
-        private async Task<(int Code, string Body)> PostAsync<T>(string url, T value)
+        private async Task<(int Code, string Body)> PostAsync<T>(string url, T data)
         {
             try
             {
-                var jsonString = JsonConvert.SerializeObject(value, Formatting.None);
+                var jsonString = JsonConvert.SerializeObject(data, Formatting.None);
                 var content = new StringContent(jsonString, Encoding.UTF8, MediaTypeNames.Application.Json);
                 var response = await _httpClient.PostAsync(url, content);
                 return (
@@ -195,7 +196,7 @@ namespace Monobank
         /// <summary>
         /// Encapsulates constants related to API requests, URLs and URL parts.
         /// </summary>
-        private static class API
+        private static class Api
         {
             public const string Production = "https://api.monobank.ua";
 

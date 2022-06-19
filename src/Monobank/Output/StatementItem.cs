@@ -49,7 +49,7 @@ namespace Monobank
             ReceiptId = receiptId;
             InvoiceId = invoiceId;
             CounterEdrpou = counterEdrpou;
-            CounterIBAN = counterIban;
+            CounterIban = counterIban;
         }
 
         /// <summary>
@@ -152,6 +152,6 @@ namespace Monobank
         /// Gets the IBAN of the counter-agent which appears only for individual entrepreneur accounts. 
         /// </summary>
         [JsonProperty("counterIban")]
-        public string CounterIBAN { get; }
+        public string CounterIban { get; }
     }
 }

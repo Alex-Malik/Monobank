@@ -31,7 +31,7 @@ namespace Monobank
             CurrencyCode = currencyCode;
             CashbackType = cashbackType;
             MaskedPan = maskedPan;
-            IBAN = iban;
+            Iban = iban;
         }
 
         /// <summary>
@@ -86,6 +86,6 @@ namespace Monobank
         /// Gets the international bank account number.
         /// </summary>
         [JsonProperty("iban")]
-        public string IBAN { get; }
+        public string Iban { get; }
     }
 }
