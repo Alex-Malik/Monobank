@@ -111,23 +111,6 @@ namespace Monobank
                 throw new NotSupportedException();
         }
 
-        public async Task<Invoice> CreatePaymentRequestAsync(decimal amount, int ccy, string destination, string redirectUrl)
-        {
-      
-            var paymentRequest = new PaymentRequest(amount, ccy, destination, redirectUrl);
-
-            var (code, body) = await PostAsync(Api.Acquiring.MerchantCreate, paymentRequest);
-            return code switch
-            {
-                200 => JsonConvert.DeserializeObject<Invoice>(body),
-                403 => throw new InvalidTokenException(),
-                _ => throw new NotSupportedException()
-            };
-
-        }
-
-
-
         /// <summary>
         /// Gets a statement for specified account within given period of rime.
         /// </summary>
@@ -164,6 +147,14 @@ namespace Monobank
 
         #region Acquiring
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="invoice"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        /// <exception cref="InvalidTokenException"></exception>
+        /// <exception cref="NotSupportedException"></exception>
         public async Task<InvoiceInfo> CreateInvoiceAsync(Invoice invoice)
         {
             // TODO Validate invoice data (at least for required fields)
@@ -178,6 +169,20 @@ namespace Monobank
                 _ => throw new NotSupportedException()
             };
         }
+
+        // public async Task<InvoiceStatus> GetInvoiceStatus(string invoiceId)
+        // {
+        //     if (string.IsNullOrEmpty(invoiceId))
+        //         throw new InvalidInvoiceIdException();
+        //     
+        //     var (code, body) = await GetAsync(Api.Merchant.Invoice.Status(invoiceId));
+        //     return code switch
+        //     {
+        //         200 => JsonConvert.DeserializeObject<IEnumerable<StatementItem>>(body),
+        //         403 => throw new InvalidTokenException(),
+        //         _ => throw new NotSupportedException()
+        //     };
+        // }
 
         #endregion
 
