@@ -145,6 +145,25 @@ namespace Monobank
                                       && (DateTime.UtcNow - _lastTimeGetStatementCalled.Value).TotalSeconds > Validation.StatementTimeoutBetweenCallsInSeconds;
         }
 
+        #region Acquiring
+
+        public async Task<InvoiceInfo> CreateInvoiceAsync(Invoice invoice)
+        {
+            // TODO Validate invoice data (at least for required fields)
+            
+            var (code, body) = await PostAsync(Api.Merchant.Invoice.Create, invoice);
+            return code switch
+            {
+                200 => JsonConvert.DeserializeObject<InvoiceInfo>(body),
+                400 => throw new NotImplementedException(),
+                403 => throw new InvalidTokenException(),
+                404 => throw new NotImplementedException(),
+                _ => throw new NotSupportedException()
+            };
+        }
+
+        #endregion
+
         /// <summary>
         /// GETs data from the given <see cref="url"/> of Monobank's API.
         /// </summary>
@@ -211,12 +230,21 @@ namespace Monobank
                 public const string ClientInfo = "/personal/client-info";
                 public const string Webhook = "/personal/webhook";
 
-                public static string Statement(string account, DateTime from, DateTime to)
-                {
-                    return "/personal/statement/{account}/{from}/{to}"
+                public static string Statement(string account, DateTime from, DateTime to) 
+                    => "/personal/statement/{account}/{from}/{to}"
                         .Replace("{account}", account)
                         .Replace("{from}", new DateTimeOffset(from).ToUnixTimeSeconds().ToString())
                         .Replace("{to}", new DateTimeOffset(to).ToUnixTimeSeconds().ToString());
+            }
+
+            public static class Merchant
+            {
+                public static class Invoice
+                {
+                    public const string Create = "/api/merchant/invoice/create";
+
+                    public static string Status(string invoiceId) 
+                        => $"/api/merchant/invoice/status?invoiceId={invoiceId}";
                 }
             }
         }
