@@ -111,6 +111,23 @@ namespace Monobank
                 throw new NotSupportedException();
         }
 
+        public async Task<Invoice> CreatePaymentRequestAsync(decimal amount, int ccy, string destination, string redirectUrl)
+        {
+      
+            var paymentRequest = new PaymentRequest(amount, ccy, destination, redirectUrl);
+
+            var (code, body) = await PostAsync(Api.Acquiring.MerchantCreate, paymentRequest);
+            return code switch
+            {
+                200 => JsonConvert.DeserializeObject<Invoice>(body),
+                403 => throw new InvalidTokenException(),
+                _ => throw new NotSupportedException()
+            };
+
+        }
+
+
+
         /// <summary>
         /// Gets a statement for specified account within given period of rime.
         /// </summary>
@@ -204,7 +221,10 @@ namespace Monobank
             {
                 public const string Currency = "/bank/currency";
             }
-
+            public static class Acquiring
+            {
+                public const string MerchantCreate = "/api/merchant/invoice/create";
+            }
             public static class Personal
             {
                 public const string ClientInfo = "/personal/client-info";
@@ -218,6 +238,7 @@ namespace Monobank
                         .Replace("{to}", new DateTimeOffset(to).ToUnixTimeSeconds().ToString());
                 }
             }
+            
         }
 
         /// <summary>
@@ -225,7 +246,7 @@ namespace Monobank
         /// </summary>
         private static class RequestHeaders
         {
-            public const string XToken = "X-Token";
+            public const string XToken = "uyV-54sYFBWRUmgHWdNBW6qmz8V35Nzy1rY-Hc3EQ5sY";
         }
 
         /// <summary>
