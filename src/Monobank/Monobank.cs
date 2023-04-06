@@ -135,6 +135,7 @@ namespace Monobank
             return code switch
             {
                 200 => JsonConvert.DeserializeObject<IEnumerable<StatementItem>>(body),
+                403 => throw new InvalidTokenException(),
                 _ => throw new NotSupportedException()
             };
 

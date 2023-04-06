@@ -58,7 +58,7 @@ namespace Monobank.Tests
         [Fact]
         public async Task GetUserInfoAsync_WrongToken_ThrowsInvalidTokenException()
         {
-            Assert.ThrowsAsync<InvalidTokenException>(() => new Monobank("123").GetUserInfoAsync());
+            await Assert.ThrowsAsync<InvalidTokenException>(() => new Monobank("123").GetUserInfoAsync());
         }
 
         [Fact]
@@ -76,7 +76,7 @@ namespace Monobank.Tests
         [Fact]
         public async Task GetStatementAsync_WrongToken_ThrowsInvalidTokenException()
         {
-            Assert.ThrowsAsync<InvalidTokenException>(async () 
+            await Assert.ThrowsAsync<InvalidTokenException>(async () 
                 => await new Monobank("123").GetStatementAsync("123", DateTime.Now, DateTime.Now));
         }
     }
