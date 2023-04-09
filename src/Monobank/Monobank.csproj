@@ -1,7 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>netcoreapp3.1</TargetFramework>
         <Authors>Alex Malik</Authors>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <Title>Monobank</Title>
@@ -12,6 +11,8 @@
         <PackageIcon>monobank.png</PackageIcon>
         <PackageVersion>1.0.3</PackageVersion>
         <Description>Friendly C# library which makes it easy for you to interect with Monobank API 🐈‍</Description>
+        <LangVersion>default</LangVersion>
+        <TargetFrameworks>netcoreapp3.1;net6.0</TargetFrameworks>
     </PropertyGroup>
 
     <ItemGroup>
@@ -23,10 +24,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <None Update="monobank.png">
-        <Pack>True</Pack>
-        <PackagePath></PackagePath>
-      </None>
+      <None Include="monobank.png" Pack="true" PackagePath="" />
     </ItemGroup>
 
 </Project>

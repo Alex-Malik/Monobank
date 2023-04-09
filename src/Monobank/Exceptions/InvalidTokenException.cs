@@ -1,4 +1,6 @@
-﻿namespace Monobank.Exceptions
+﻿using System;
+
+namespace Monobank.Exceptions
 {
     /// <summary>
     /// Represents error caused by invalid Token value.

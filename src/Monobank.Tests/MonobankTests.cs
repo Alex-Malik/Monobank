@@ -8,7 +8,7 @@ namespace Monobank.Tests
 {
     public class MonobankTests
     {
-        private const string Token = "";
+        private const string Token = "uOf7CokWjF8du1VPJDPppz7xW6i7T0jMrNQ2xcluPZZ0";
         private const string WebhookUrl = "";
         private const string RedirectUrl = "";
     
@@ -85,7 +85,7 @@ namespace Monobank.Tests
         #region Acquiring
 
         [Fact]
-        public async Task CreateInvoice_Called_ReturnsInvoiceInfo()
+        public async Task CreateInvoiceAsync_Called_ReturnsInvoiceInfo()
         {
             var monobank = new Monobank(Token);
             var result = await monobank.CreateInvoiceAsync(new Invoice
@@ -95,6 +95,19 @@ namespace Monobank.Tests
             });
             Assert.NotNull(result);
         }
+        
+        [Fact]
+        public async Task GetInvoiceStatusAsync_Called_ReturnsInvoiceStatus()
+        {
+            var monobank = new Monobank(Token);
+            var invoice = await monobank.CreateInvoiceAsync(new Invoice
+            {
+                Amount = 100,
+                RedirectUrl = RedirectUrl
+            });
+            var result = await monobank.GetInvoiceStatusAsync(invoice.InvoiceId);
+            Assert.NotNull(result);
+        } 
 
         #endregion
     }
